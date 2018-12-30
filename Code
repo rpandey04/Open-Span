@@ -1,0 +1,75 @@
+Dim excel As Microsoft.Office.Interop.Excel.Application
+ Dim wb As Microsoft.Office.Interop.Excel.Workbook
+ 
+ Dim ws As Microsoft.Office.Interop.Excel.Worksheet
+  Dim p_ws As Microsoft.Office.Interop.Excel.Worksheet
+ Dim rng As Microsoft.Office.Interop.Excel.Range 'capturing the range of sheet1 '''
+ Dim p_rng As Microsoft.Office.Interop.Excel.Range 'capturing the range of pivottable shhet1''
+ Try
+ excel = New Microsoft.Office.Interop.Excel.ApplicationClass'create the instance of excel work book'
+
+ wb = excel.Workbooks.Open(filepath)'Open the excel the file'
+ excel.Visible=True
+
+ ws=CType(wb.Sheets(sheetName),Microsoft.Office.Interop.Excel.Worksheet)'select a sheet and activiates'
+ws.Activate
+
+ rng=ws.UsedRange
+ 
+ 
+
+ p_ws=CType(wb.Sheets.Add,Microsoft.Office.Interop.Excel.Worksheet)'create a empty and and name the sheet as pivot table'
+
+  p_rng= CType(p_ws.Cells(1,1),Microsoft.Office.Interop.Excel.Range) 'Specify the first cell for the pivot table'
+
+ 'Creation pivot Cache and pivot table '
+ Dim oPivotCache As Microsoft.Office.Interop.Excel.PivotCache=Nothing
+ Dim oPivotTables As Microsoft.Office.Interop.Excel.PivotTables=Nothing
+ Dim oPivotTable As Microsoft.Office.Interop.Excel.PivotTable=Nothing 
+ 
+ wb.Names.Add("Range1",rng)
+
+
+ 
+ oPivotCache = wb.PivotCaches().Add(Microsoft.Office.Interop.Excel.XlPivotTableSourceType.xlDatabase,"Range1")
+ 
+ 
+ 
+
+ oPivotTables=DirectCast(p_ws.PivotTables(Type.Missing),Microsoft.Office.Interop.Excel.PivotTables)
+
+ oPivotTable=oPivotTables.Add(oPivotCache,p_rng,"Summary",Type.Missing,Type.Missing)'first paramenter is cache,range the table should start,table name'
+
+ 'Creation of pivot Fields'
+ 
+ Dim oPivotField As Microsoft.Office.Interop.Excel.PivotField=Nothing
+
+ oPivotField=CType(oPivotTable.PivotFields("CONTRATO"),Microsoft.Office.Interop.Excel.PivotField)'Specfiy the coulmn name'
+ oPivotField.Orientation=Microsoft.Office.Interop.Excel.XlPivotFieldOrientation.xlRowField
+ 
+
+ 
+ oPivotField=CType(oPivotTable.PivotFields("% IVA REPER."),Microsoft.Office.Interop.Excel.PivotField)'Specfiy the coulmn name'
+ oPivotField.Orientation=Microsoft.Office.Interop.Excel.XlPivotFieldOrientation.xlRowField
+ 
+
+ 
+ oPivotField=CType(oPivotTable.PivotFields("IMP. REAL"),Microsoft.Office.Interop.Excel.PivotField)'Specfiy the coulmn name'
+ oPivotField.Orientation=Microsoft.Office.Interop.Excel.XlPivotFieldOrientation.xlDataField
+ 
+ oPivotField=CType(oPivotTable.PivotFields("IMP. REAL"),Microsoft.Office.Interop.Excel.PivotField)'Specfiy the coulmn name'
+ oPivotField.Orientation=Microsoft.Office.Interop.Excel.XlPivotFieldOrientation.xlPageField
+  
+ 
+ oPivotField.Function=Microsoft.Office.Interop.Excel.XlConsolidationFunction.xlSum
+ oPivotField.Name="Sum_Of_unit"
+
+ 
+
+
+ 
+ 
+ 
+Catch es As Exception
+ System.Windows.MessageBox.Show(es.Message)
+End Try
